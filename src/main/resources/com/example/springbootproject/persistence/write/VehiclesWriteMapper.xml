@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootproject.persistence.write.VehiclesWriteMapper" >
+
+	<insert id="insertVehicleDetailsList" parameterType="java.util.List">
+		<foreach collection="vehicleDetailsDTOList" index="index" item="vehicleDetailsDTO" open="" separator=";" close="">
+			insert into vehicle_details
+			(vehicle_id, make, model, model_year, body_style, engine, drive_type, color, mpg )
+			values 
+			(#{vehicleDetailsDTO.vehicleId}, #{vehicleDetailsDTO.make}, #{vehicleDetailsDTO.model}, 
+			#{vehicleDetailsDTO.modelYear}, #{vehicleDetailsDTO.bodyStyle}, #{vehicleDetailsDTO.engine}, 
+			#{vehicleDetailsDTO.driveType}, #{vehicleDetailsDTO.color}, #{vehicleDetailsDTO.MPG})
+		</foreach>
+    </insert>
+    
+    <insert id="insertVehiclePriceList" parameterType="java.util.List">
+		<foreach collection="vehiclePriceDTOList" index="index" item="vehiclePriceDTO" open="" separator=";" close="">
+			insert into vehicle_price
+			(vehicle_id, msrp, savings, final_price)
+			values 
+			(#{vehiclePriceDTO.vehicleId}, #{vehiclePriceDTO.MSRP}, #{vehiclePriceDTO.Savings}, 
+			#{vehiclePriceDTO.finalPrice})
+		</foreach>
+    </insert>
+    
+    <insert id="insertVehicleFeature" parameterType="com.example.springbootproject.model.dto.VehicleFeatureDTO" >
+        <selectKey keyProperty="featureId" order="AFTER" resultType="java.lang.Integer">
+            select max(feature_id) from vehicle_feature
+        </selectKey>
+        insert into vehicle_feature
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="featureName != null" >
+                feature_name,
+            </if>
+            <if test="featureType != null" >
+                feature_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="featureName != null" >
+                #{featureName,jdbcType=VARCHAR},
+            </if>
+            <if test="featureType != null" >
+                #{featureType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    
+    <insert id="insertVehicleFeatureMapper" parameterType="com.example.springbootproject.model.dto.VehicleFeatureDTO" >
+        insert into vehicle_feature_mapper
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="vehicleId != null" >
+                vehicle_id,
+            </if>
+            <if test="featureId != null" >
+                feature_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="vehicleId != null" >
+                #{vehicleId,jdbcType=INTEGER},
+            </if>
+            <if test="featureId != null" >
+                #{featureId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+</mapper>

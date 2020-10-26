@@ -28,11 +28,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	http.headers().frameOptions().disable();
+    	
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/addUser").hasRole("ADMIN")
                 .antMatchers("/deleteUser/{id}").hasRole("ADMIN")
+                .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic();
+        
+        http.headers().frameOptions().disable();
+        
     }
 }

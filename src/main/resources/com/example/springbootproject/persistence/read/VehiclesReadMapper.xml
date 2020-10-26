@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootproject.persistence.read.VehiclesReadMapper" >
+
+	<resultMap id = "vehicleFeatureResult" type = "com.example.springbootproject.model.dto.VehicleFeatureDTO">
+	   <result property = "vehicleId" column = "vehicle_id"/>
+	   <result property = "featureId" column = "feature_id"/>
+	   <result property = "featureName" column = "feature_name"/>
+	   <result property = "featureType" column = "feature_type"/>
+	</resultMap>
+
+	<select id = "getVehicleFeatureDTOByNameAndType" resultMap = "vehicleFeatureResult">
+	   SELECT top 1 vfm.vehicle_id, vf.feature_id, vf.feature_name 
+	   FROM vehicle_feature vf join vehicle_feature_mapper vfm 
+	   on vf.feature_id = vfm.feature_id
+	   where vf.feature_name = #{featureName} and vf.feature_type = #{featureType}
+	</select>
+	
+	<select id="getAllVehicleIds" resultType="java.lang.Integer" >
+		select distinct vehicle_id from vehicle_details
+	</select>
+	
+	<resultMap id = "vehicleDetailsResult" type = "com.example.springbootproject.model.dto.VehicleDetailsDTO">
+	   <result property = "vehicleId" column = "vehicle_id"/>
+	   <result property = "make" column = "make"/>
+	   <result property = "model" column = "model"/>
+	   <result property = "modelYear" column = "model_year"/>
+	   <result property = "bodyStyle" column = "body_style"/>
+	   <result property = "engine" column = "engine"/>
+	   <result property = "driveType" column = "drive_type"/>
+	   <result property = "color" column = "color"/>
+	   <result property = "MPG" column = "mpg"/>
+	</resultMap>
+	
+	<select id="getVehicleDetailsByIds" resultMap = "vehicleDetailsResult" parameterType="java.util.List" >
+        select * from vehicle_details where vehicle_id in
+        <foreach collection="vehicleIdList" item="vehicleId" open="(" close=")" separator="," >
+            #{vehicleId}
+        </foreach>
+    </select>
+    
+    <select id="getVehicleFeatureByIds" resultMap = "vehicleFeatureResult" parameterType="java.util.List" >
+        select vfm.vehicle_id, vfm.feature_id, vf.feature_name, vf.feature_type
+        from vehicle_feature vf join vehicle_feature_mapper vfm 
+	    on vf.feature_id = vfm.feature_id
+        where vfm.vehicle_id in
+        <foreach collection="vehicleIdList" item="vehicleId" open="(" close=")" separator="," >
+            #{vehicleId}
+        </foreach>
+    </select>
+    
+    <resultMap id = "vehiclePriceResult" type = "com.example.springbootproject.model.dto.VehiclePriceDTO">
+	   <result property = "vehicleId" column = "vehicle_id"/>
+	   <result property = "MSRP" column = "msrp"/>
+	   <result property = "Savings" column = "savings"/>
+	   <result property = "finalPrice" column = "final_price"/>
+	</resultMap>
+	
+    <select id="getVehiclePriceByIds" resultMap = "vehiclePriceResult" parameterType="java.util.List" >
+        select * from vehicle_price where vehicle_id in
+        <foreach collection="vehicleIdList" item="vehicleId" open="(" close=")" separator="," >
+            #{vehicleId}
+        </foreach>
+    </select>
+    
+    <select id="getVehiclesByModelName" resultType="java.lang.Integer" >
+		select distinct vehicle_id from vehicle_details where model = #{modelName}
+	</select>
+	
+	<select id="getVehicleByPrice" resultType="java.lang.Integer" >
+		select distinct vehicle_id from vehicle_price where final_price BETWEEN #{fromPrice} and #{toPrice}
+	</select>
+	
+	<select id="getVehicleByFeatures" resultType="java.lang.Integer" >
+		select distinct vfm.vehicle_id from vehicle_feature vf 
+		join vehicle_feature_mapper vfm on vf.feature_id = vfm.feature_id 
+		where (vf.feature_type = 'Interior' and vf.feature_name like concat('%',concat(#{interior},'%'))) or
+		(vf.feature_type = 'Exterior' and vf.feature_name like concat('%',concat(#{exterior},'%')))
+	</select>
+</mapper>
