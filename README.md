@@ -29,7 +29,10 @@ vehicle_price - to store the vehicle price information
 APIs are secured using Basic Authentication from the Spring Security framework. APIs will be needing the appropriate credentials to hit the endpoint
 
 ## Testing
-Unit tests are implementes using Junits
+Unit tests are implementes using Junits and Mockito
+
+## Containerization
+Docker file is added which has commands to set up a docker images
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
